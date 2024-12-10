@@ -1,0 +1,87 @@
+{% extends './layout.html' %}
+
+{% block title %}{{ data.titulo }}{% endblock %}
+
+{% block body %}
+<div class="">
+    <video id="video" autoplay style="width: 100%; max-width: 640px; height: auto;"></video>
+    <canvas id="overlay" style="position: absolute; top: 0; left: 0; width: 100%; max-width: 640px; height: auto;"></canvas>
+    <p id="prediction" style="font-size: 1.5em; font-weight: bold; text-align: center;"></p>
+    <div id="chat-container" style="width: 100%; max-width: 640px; margin: 20px auto; border: 1px solid #ccc; border-radius: 10px; padding: 10px; background: #f9f9f9; height: 200px; overflow-y: auto;">
+        <!-- Mensajes de predicción aparecerán aquí -->
+    </div>
+</div>
+
+<script>
+    const video = document.querySelector("#video");
+    const chatContainer = document.querySelector("#chat-container");
+    const predictionElement = document.querySelector("#prediction");
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const maxFrames = 60;
+    let frameBuffer = [];
+
+    async function setupCamera() {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        return new Promise((resolve) => {
+            video.onloadedmetadata = () => resolve(video);
+        });
+    }
+
+    function addChatMessage(action, confidence) {
+        const message = document.createElement("div");
+        message.style.margin = "5px 0";
+        message.style.padding = "10px";
+        message.style.borderRadius = "5px";
+        message.style.backgroundColor = "#e0e0e0";
+        message.style.color = "#333";
+        message.style.fontWeight = "bold";
+        message.textContent = `${action}`;
+        chatContainer.appendChild(message);
+
+        // Desplazar el chat hacia abajo
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    let throttle = false;
+
+    async function captureFrame() {
+        if (throttle) return;
+        throttle = true;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL("image/jpeg", 0.5).split(",")[1];
+        frameBuffer.push(imageData);
+
+        if (frameBuffer.length >= maxFrames) {
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ frames: frameBuffer }),
+                });
+
+                const result = await response.json();
+                if (result.action && result.confidence) {
+                    addChatMessage(result.action, result.confidence);
+                }
+
+                frameBuffer = [];
+            } catch (error) {
+                console.error("Error al enviar la solicitud:", error);
+            }
+        }
+
+        setTimeout(() => { throttle = false; }, 100);
+    }
+
+    setupCamera().then(() => {
+        video.play();
+        setInterval(() => captureFrame(), 33);
+    });
+</script>
+{% endblock %}

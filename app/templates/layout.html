@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiSign</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif; /* Aplica la fuente Poppins */
+            margin: 0;
+            padding: 0;
+            background-color: rgb(250, 254, 255); /* Gris claro */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header, footer {
+            width: 100%;
+            text-align: center;
+            padding: 0.5em 0;
+        }
+
+        .section {
+            padding: 1em 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-bg {
+            position: absolute;
+            inset: 0;
+            -z-index: -10;
+            height: 100%;
+            width: 100%;
+
+        }
+
+
+
+        .section-line {
+            content: '';
+            width: 100%;
+            height: 5px;
+            background-color: #000000; /* Gris intermedio */
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1em;
+            margin-top: 2em;
+        }
+
+        .card {
+            border: 1px solid ;
+            border-radius: 10px;
+            padding: 0.6em;
+            width: 180px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2em;
+            color: #4CAF50;
+            margin-bottom: 0.3em;
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 0.3em;
+            font-size: 16px;
+        }
+
+        .card-description {
+            font-size: 14px;
+        }
+
+        .scroll-button {
+            margin-top: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3479f8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .scroll-button:hover {
+            background-color: #2e69d8;
+        }
+
+        .section-title {
+            padding-top: 1em; 
+        }
+
+        /* Menú de accesibilidad */
+        .accessibility-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .menu-section {
+            margin-bottom: 15px;
+        }
+
+        .menu-section h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .menu-section label {
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .menu-section input[type="checkbox"],
+        .menu-section input[type="button"] {
+            margin-right: 10px;
+        }
+
+        .menu-section input[type="button"] {
+            background-color: #3479f8;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .menu-section input[type="button"]:hover {
+            background-color: #2e69d8;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .menu-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .menu-header span {
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .menu-options {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .menu-options label {
+            display: block;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .accessibility-menu label {
+            display: block;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .accessibility-menu input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .contrast-invert {
+            filter: invert(100%);
+            color: #333; 
+        }
+
+        .contrast-dark {
+            background-color: #121212;
+            color: #f5f5f5; 
+        }
+
+        .contrast-light {
+            background-color: #ffffff;
+            color: #333; 
+        }
+
+        .saturate-colors {
+            filter: saturate(2);
+        }
+
+        .desaturate-colors {
+            filter: grayscale(100%);
+        }
+
+        footer {
+            display: flex;
+            align-items: center;
+            padding: 1em 0;
+            color: #333;
+        }
+
+        footer img {
+            height: 40px;
+            margin-right: 1em;
+            margin-left: 30px;
+        }
+
+        footer p {
+            margin: 0;
+            margin-left: 28%;
+        }
+    </style>
+
+</head>
+
+<body>
+    <header></header>
+
+    <!-- Menú de accesibilidad -->
+    <div class="accessibility-menu">
+        <div class="menu-header" onclick="toggleMenu()">
+            <h3>Menú de Accesibilidad</h3>
+            <span id="menu-toggle">+</span>
+        </div>
+        <div class="menu-options">
+
+            <div class="menu-section">
+                <h4>Contraste</h4>
+                <label>
+                    <input type="checkbox" onchange="toggleContrast('invert')"> Invertir Colores
+                </label>
+                <label>
+                    <input type="checkbox" onchange="toggleContrast('dark')"> Contraste Oscuro
+                </label>
+                <label>
+                    <input type="checkbox" onchange="toggleContrast('light')"> Contraste Claro
+                </label>
+            </div>
+    
+            <!-- Sección: Tamaño de letra -->
+            <div class="menu-section">
+                <h4>Tamaño de Letra</h4>
+                <input type="button" value="Aumentar Letra" onclick="incrementFontSize()">
+                <input type="button" value="Restablecer Letra" onclick="resetFontSize()">
+            </div>
+    
+            <div class="menu-section">
+                <h4>Saturación</h4>
+                <label>
+                    <input type="checkbox" onchange="toggleSaturation('saturate')"> Saturar colores
+                </label>
+                <label>
+                    <input type="checkbox" onchange="toggleSaturation('desaturate')"> Desaturar colores
+                </label>
+            </div>
+            <!-- Sección: Espaciado y Altura de línea -->
+            <div class="menu-section">
+                <h4>Espaciado y Altura</h4>
+                <label>
+                    <input type="checkbox" onchange="toggleLetterSpacing()"> Aumentar Espaciado de Letras
+                </label>
+                <label>
+                    <input type="checkbox" onchange="toggleLineHeight()"> Aumentar Altura Entre Líneas
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección: ¿Qué es LumiSign? -->
+    <section class="section bg-que-es">
+        <div class="section-bg"></div>
+        <div class="content"  style="margin-top: 60px;">
+            <img src="https://www.upla.cl/normasgraficas/wp-content/uploads/2016/01/logo_upla-1.png" style="height: 40px;" alt="Logo UPLA">
+            <h1>Bienvenidos a LumiSign!</h1>
+            <p style="font-size: 18px; padding-left: 15px; padding-right: 15px;">
+                LumiSign es una aplicación diseñada para <b>facilitar la inclusión y el aprendizaje de la lengua de señas chilena (LSCh).</b>
+                Buscamos derribar barreras de comunicación entre las personas oyentes y las personas sordas, ofreciendo una herramienta
+                gratuita, educativa y accesible para todos.
+            </p>
+            <button class="scroll-button" onclick="scrollToSection('como-usar')">¡Pruébala ahora!</button>
+        </div>
+
+        <div class="section-bg"></div>
+        <div class="content" style="margin-bottom: 60px;">
+            <h2>Características</h2>
+            <div class="cards-container">
+                <div class="card" >
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">Educación Accesible</div>
+                    <div class="card-description">Diseñada para comunicarte y aprender LSCH de forma fácil y práctica.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">💡</div>
+                    <div class="card-title">Alta Calidad</div>
+                    <div class="card-description">Traducción precisa gracias al uso de inteligencia artificial avanzada.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">Traducción en Tiempo Real</div>
+                    <div class="card-description">Permite una comunicación fluida e instantánea entre usuarios.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🌐</div>
+                    <div class="card-title">Siempre Disponible</div>
+                    <div class="card-description">Accede a LumiSign en cualquier momento y lugar sin restricciones.</div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎉</div>
+                    <div class="card-title">Sin Costo</div>
+                    <div class="card-description">Disfruta de todas las funcionalidades de manera gratuita, sin pagos ocultos.</div>
+                </div>
+            </div>
+        </div>
+        <div class="section-line"></div>
+    </section>
+
+    <!-- Sección: ¿Cómo utilizarlo? -->
+    <section class="section bg-como-usar" id="como-usar">
+        <div class="section-bg"></div>
+        <div class="content">
+            <h2 class="section-title" style="padding-top: 1em;">¿Cómo utilizarlo?</h2>
+            <p>
+                Usar LumiSign es muy sencillo. Sigue estos pasos:
+            </p>
+            <ol style="text-align: left; max-width: 700px; margin: 20px auto;">
+                <li><strong>Presiona el botón "Pruébalo ahora":</strong> Esto desplegará una ventana que activará la cámara de tu dispositivo.</li>
+                <li><strong>Permite el uso de la cámara:</strong> LumiSign necesita acceso a tu cámara para captar tus señas.</li>
+                <li><strong>Realiza una seña:</strong> Coloca tus manos frente a la cámara y realiza la seña que deseas interpretar.</li>
+                <li><strong>Recibe la respuesta en el chat:</strong> LumiSign interpretará tu seña y mostrará la respuesta en el chat.</li>
+            </ol>
+            <iframe 
+                width="560" 
+                height="315" 
+                src="https://www.youtube.com/embed/bZfHkjC7tFA?si=Z6W08X61vlCjQ5jT" 
+                title="Reproductor de video de YouTube" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+            <div style="margin-top: 2em; text-align: center; margin-bottom: 2em;"> <!-- Corrige el margen y centra los botones -->
+                <button class="scroll-button" style=" margin-right: 15px;" onclick="showDemo()">
+                    Traduce ahora
+                </button>
+                <button class="scroll-button" onclick="location.href='mailto:contacto@lumisign.cl'">
+                    Contactanos
+                </button>
+            </div>
+        </div>
+        <div class="section-line"></div>
+    </section>
+
+
+    <div id="demoView" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background-color: #333; padding: 20px; border-radius: 10px; text-align: center; width: 80%; max-width: 700px;">
+            <h2 style="color: white;">Demo de LumiSign</h2>
+            <p>{% block body %}{% endblock %}</p>
+            <br>
+            <button onclick="closeDemo()" style="margin-top: 20px; padding: 10px 20px; font-size: 14px; background-color: #f44336; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <img src="https://www.upla.cl/normasgraficas/wp-content/uploads/2016/01/logo_upla-1.png" alt="Logo UPLA">
+        <p>&copy; 2024 LumiSign. Todos los derechos reservados.</p>
+    </footer>
+    
+</body>
+<!-- Scripts -->
+    <script>
+        let isFontSizeLarge = false;
+        let isLetterSpacingWide = false;
+        let isLineHeightIncreased = false;
+        let currentFontSize = 16; // Tamaño de fuente inicial en px
+        const maxFontSize = 26; // Límite máximo del tamaño de fuente
+
+        function toggleContrast(type) {
+            const elementsToStyle = document.querySelectorAll('section, footer, header');
+            elementsToStyle.forEach((element) => {
+                if (type === 'invert') {
+                    element.classList.toggle('contrast-invert');
+                    element.classList.remove('contrast-dark', 'contrast-light'); // Asegurarse de que no se mezclen efectos
+                } else if (type === 'dark') {
+                    element.classList.toggle('contrast-dark');
+                    element.classList.remove('contrast-invert', 'contrast-light'); // Asegurarse de que no se mezclen efectos
+                } else if (type === 'light') {
+                    element.classList.toggle('contrast-light');
+                    element.classList.remove('contrast-invert', 'contrast-dark'); // Asegurarse de que no se mezclen efectos
+                }
+            });
+        }
+
+
+        function toggleSaturation(type) {
+            const elementsToStyle = document.querySelectorAll('section, footer, header');
+            elementsToStyle.forEach((element) => {
+                if (type === 'desaturate') {
+                    element.classList.toggle('desaturate-colors');
+                    element.classList.remove('saturate-colors'); // Asegurarse de que no se mezclen efectos
+                } else if (type === 'saturate') {
+                    element.classList.toggle('saturate-colors');
+                    element.classList.remove('desaturate-colors'); // Asegurarse de que no se mezclen efectos
+                }
+            });
+        }
+
+        // Función para incrementar el tamaño de letra
+        function incrementFontSize() {
+            const elementsToStyle = document.querySelectorAll('section, footer, header');
+            if (currentFontSize < maxFontSize) {
+                currentFontSize += 2; // Incrementa en 2px
+                elementsToStyle.forEach((element) => {
+                    element.style.fontSize = `${currentFontSize}px`;
+                });
+            }
+        }
+
+        // Función para restablecer el tamaño de letra
+        function resetFontSize() {
+            const elementsToStyle = document.querySelectorAll('section, footer, header');
+            currentFontSize = 16; // Restablece al tamaño inicial
+            elementsToStyle.forEach((element) => {
+                element.style.fontSize = `${currentFontSize}px`;
+            });
+        }
+
+        function toggleLetterSpacing() {
+            isLetterSpacingWide = !isLetterSpacingWide;
+            // Aplica el espaciado de letras solo a las secciones, no al menú
+            document.querySelectorAll('section, footer, header').forEach(element => {
+                element.style.letterSpacing = isLetterSpacingWide ? '0.1em' : 'normal';
+            });
+        }
+
+        function toggleLineHeight() {
+            isLineHeightIncreased = !isLineHeightIncreased;
+            // Aplica la altura de línea solo a las secciones, no al menú
+            document.querySelectorAll('section, footer, header').forEach(element => {
+                element.style.lineHeight = isLineHeightIncreased ? '2' : '1.5';
+            });
+        }
+
+        // Alternar menú desplegable
+        function toggleMenu() {
+            const menuOptions = document.querySelector('.menu-options');
+            const menuToggle = document.getElementById('menu-toggle');
+            if (menuOptions.style.display === 'block') {
+                menuOptions.style.display = 'none';
+                menuToggle.textContent = '+';
+            } else {
+                menuOptions.style.display = 'block';
+                menuToggle.textContent = '-';
+            }
+        }
+
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' }); // Desplazamiento suave
+            } else {
+                console.error(`No se encontró una sección con el id: ${id}`);
+            }
+        }
+
+        function showDemo() {
+            const demoView = document.getElementById('demoView');
+            demoView.style.display = 'flex'; 
+        }
+
+        function closeDemo() {
+            const demoView = document.getElementById('demoView');
+            demoView.style.display = 'none'; 
+        }
+    </script>
+</body>
+</html>
